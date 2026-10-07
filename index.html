@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.json">
+<title>Fitness Command Centre</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#111827;--soft:#eef1f5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:700px;margin:auto;padding:18px 16px 42px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.brand{font-size:25px;font-weight:850;letter-spacing:-.5px}.date{color:var(--muted);font-size:13px;margin-top:3px}.score{font-weight:800;background:var(--card);border:1px solid var(--line);padding:8px 11px;border-radius:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:14px;box-shadow:0 6px 24px rgba(17,24,39,.05)}
+.stats{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.stats b{color:var(--text)}
+.progress{height:11px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin:10px 0 14px}.bar{height:100%;width:0;background:#111827;transition:.25s}
+.next{background:#111827;color:#fff;border-radius:16px;padding:15px}.next small{opacity:.7}.next b{display:block;font-size:16px;margin:2px 0 4px}
+.section{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px}
+.task{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}.task:last-child{border-bottom:0}.task input{width:23px;height:23px;margin-top:1px;accent-color:#111827}.time{font-size:12px;color:var(--muted)}.title{font-weight:750;margin-top:2px}.detail{font-size:14px;color:#4b5563;line-height:1.4;margin-top:3px}.done .title,.done .detail{text-decoration:line-through;opacity:.5}
+.meal{padding:12px 0;border-bottom:1px solid var(--line);line-height:1.5;font-size:14px}.meal:last-child{border-bottom:0}.meal strong{font-size:15px}.tag{display:inline-block;background:var(--soft);padding:3px 7px;border-radius:8px;font-size:11px;font-weight:700;margin-left:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:var(--soft);border-radius:14px;padding:13px}.metric b{display:block;font-size:19px}.metric span{font-size:12px;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:750;background:#111827;color:#fff}.btn.secondary{background:var(--soft);color:#111827}
+.note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
+@media(max-width:420px){.brand{font-size:22px}.grid{grid-template-columns:1fr 1fr}}
+</style></head>
+<body><main>
+<div class="top"><div><div class="brand">Fitness Command Centre</div><div class="date" id="date"></div></div><div class="score" id="score">0/10</div></div>
+
+<div class="card"><div class="stats"><span>Today's progress</span><b id="pct">0%</b></div><div class="progress"><div class="bar" id="bar"></div></div><div class="next" id="next"></div></div>
+
+<div class="card"><div class="section">Today's checklist</div><div id="tasks"></div></div>
+
+<div class="card"><div class="section">Food plan — exact portions</div>
+<div class="meal"><strong>Breakfast · 07:15</strong><br>3 boiled eggs + cucumber + carrots + <b>1 banana</b> + <b>500 ml water</b>.</div>
+<div class="meal"><strong>Lunch · 12:30</strong><br>1 drained tin tuna + <b>2 slices</b> whole-wheat bread + <b>½ cucumber</b> + <b>1 small carrot</b> + <b>500 ml water</b>.</div>
+<div class="meal"><strong>15:30 snack</strong><br><b>1 serving</b> NutriTech Vegan Protein Cocoa mixed with water. Follow the serving size printed on your tub.</div>
+<div class="meal"><strong>Peanut butter</strong><br><b>1 tablespoon</b> when used. Keep it optional; it is not required at lunch.</div>
+<div class="meal"><strong>Yoghurt</strong><br>If using the lactose-free double-cream yoghurt you bought: <b>150 g</b> per serving. It is optional, not required daily.</div>
+</div>
+
+<div class="card"><div class="section">Daily targets</div><div class="grid">
+<div class="metric"><b>2–2.5 L</b><span>Water</span></div><div class="metric"><b>90–110 g</b><span>Protein</span></div>
+<div class="metric"><b>2.5 km</b><span>Main walk</span></div><div class="metric"><b>3 rounds</b><span>Strength</span></div>
+</div></div>
+
+<div class="card"><div class="section">Controls</div><div class="actions"><button class="btn" onclick="enableNotifications()">Enable notifications</button><button class="btn secondary" onclick="resetDay()">Reset today</button></div><div class="note">For reliable iPhone notifications, add this site to your Home Screen and open it as a Web App. The checklist saves automatically on this phone.</div></div>
+</main>
+<script>
+const tasks=[
+["07:15","Breakfast","3 eggs + cucumber + carrots + 1 banana + 500 ml water"],
+["09:00","Water + stand","500 ml water + stand/walk for 5 minutes"],
+["10:30","Move","5 minutes away from your chair"],
+["11:00","Mini walk","5–10 minutes easy walking"],
+["12:30","Lunch","1 tin tuna + 2 slices whole-wheat bread + ½ cucumber + 1 small carrot + 500 ml water"],
+["14:30","Stand + move","5–10 minutes away from your chair"],
+["15:30","Protein snack","1 serving lactose-free NutriTech Vegan Protein + water"],
+["17:15","Main walk","Apple Watch Outdoor Walk — 2.5 km target"],
+["18:30","Strength","3 rounds: 12 squats, 15 glute bridges, 10 incline push-ups, 10 dead bugs/side, 10 bird dogs/side, 20–30 sec plank"],
+["20:30","Water + recovery","Finish water target; relax; avoid unnecessary second dinner"]
+];
+const dayKey="fcc-"+new Date().toISOString().slice(0,10);let state=JSON.parse(localStorage.getItem(dayKey)||"[]");
+document.getElementById("date").textContent=new Date().toLocaleDateString("en-ZA",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+function render(){const done=state.filter(Boolean).length,p=Math.round(done/tasks.length*100),n=tasks.findIndex((_,i)=>!state[i]);document.getElementById("score").textContent=done+"/"+tasks.length;document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";document.getElementById("next").innerHTML=n<0?"<b>Day complete</b><small>You finished every task today.</small>":"<small>Next task</small><b>"+tasks[n][1]+"</b><small>"+tasks[n][0]+" · "+tasks[n][2]+"</small>";document.getElementById("tasks").innerHTML=tasks.map((t,i)=>'<label class="task '+(state[i]?"done":"")+'"><input type="checkbox" '+(state[i]?"checked":"")+' onchange="toggle('+i+')"><div><div class="time">'+t[0]+'</div><div class="title">'+t[1]+'</div><div class="detail">'+t[2]+'</div></div></label>').join("")}
+function toggle(i){state[i]=!state[i];localStorage.setItem(dayKey,JSON.stringify(state));render()}
+function resetDay(){state=[];localStorage.setItem(dayKey,"[]");render()}
+async function enableNotifications(){if(!("Notification"in window)){alert("Add this site to your iPhone Home Screen and open it as a Web App first.");return}const p=await Notification.requestPermission();if(p==="granted")new Notification("Fitness Command Centre",{body:"Notifications are enabled. Keep the app on your Home Screen."});else alert("Notifications are blocked. Go to Settings → Notifications and allow them for this web app.")}
+if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+render();
+</script></body></html>
