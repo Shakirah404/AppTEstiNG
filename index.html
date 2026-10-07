@@ -13,7 +13,7 @@ main{max-width:700px;margin:auto;padding:18px 16px 42px}.top{display:flex;justif
 .next{background:#111827;color:#fff;border-radius:16px;padding:15px}.next small{opacity:.7}.next b{display:block;font-size:16px;margin:2px 0 4px}
 .section{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px}
 .task{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}.task:last-child{border-bottom:0}.task input{width:23px;height:23px;margin-top:1px;accent-color:#111827}.time{font-size:12px;color:var(--muted)}.title{font-weight:750;margin-top:2px}.detail{font-size:14px;color:#4b5563;line-height:1.4;margin-top:3px}.done .title,.done .detail{text-decoration:line-through;opacity:.5}
-.meal{padding:12px 0;border-bottom:1px solid var(--line);line-height:1.5;font-size:14px}.meal:last-child{border-bottom:0}.meal strong{font-size:15px}.tag{display:inline-block;background:var(--soft);padding:3px 7px;border-radius:8px;font-size:11px;font-weight:700;margin-left:5px}
+.meal{padding:12px 0;border-bottom:1px solid var(--line);line-height:1.5;font-size:14px}.meal:last-child{border-bottom:0}.meal strong{font-size:15px}.tag{display:inline-block;background:var(--soft);padding:3px 7px;border-radius:8px;font-size:11px;font-weight:700;margin-left:5px}.choiceGroup{margin-top:12px}.choiceHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.chooseOne{font-size:11px;font-weight:800;background:#111827;color:#fff;padding:5px 8px;border-radius:8px}.choice{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:14px;margin:8px 0;background:#fff;cursor:pointer;transition:.15s}.choice.selected{border-color:#111827;background:#f0f2f5}.choice input{width:20px;height:20px;margin-top:1px;accent-color:#111827}.choiceTitle{font-weight:800}.choiceDetail{font-size:13px;color:#4b5563;line-height:1.4;margin-top:2px}.picked{font-size:12px;color:#111827;font-weight:750;margin-top:8px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:var(--soft);border-radius:14px;padding:13px}.metric b{display:block;font-size:19px}.metric span{font-size:12px;color:var(--muted)}
 .actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:750;background:#111827;color:#fff}.btn.secondary{background:var(--soft);color:#111827}
 .note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
@@ -26,12 +26,18 @@ main{max-width:700px;margin:auto;padding:18px 16px 42px}.top{display:flex;justif
 
 <div class="card"><div class="section">Today's checklist</div><div id="tasks"></div></div>
 
-<div class="card"><div class="section">Food plan — exact portions</div>
-<div class="meal"><strong>Breakfast · 07:15</strong><br>3 boiled eggs + cucumber + carrots + <b>1 banana</b> + <b>500 ml water</b>.</div>
-<div class="meal"><strong>Lunch · 12:30</strong><br>1 drained tin tuna + <b>2 slices</b> whole-wheat bread + <b>½ cucumber</b> + <b>1 small carrot</b> + <b>500 ml water</b>.</div>
-<div class="meal"><strong>15:30 snack</strong><br><b>1 serving</b> NutriTech Vegan Protein Cocoa mixed with water. Follow the serving size printed on your tub.</div>
-<div class="meal"><strong>Peanut butter</strong><br><b>1 tablespoon</b> when used. Keep it optional; it is not required at lunch.</div>
-<div class="meal"><strong>Yoghurt</strong><br>If using the lactose-free double-cream yoghurt you bought: <b>150 g</b> per serving. It is optional, not required daily.</div>
+<div class="card"><div class="section">Meals — choose ONE from each group</div>
+<div class="note">Pick one breakfast, one lunch, one snack and one dinner. Portions are fixed so you don't have to guess. Water stays separate: aim for 2–2.5 L across the day.</div>
+
+<div class="choiceGroup"><div class="choiceHead"><strong>Breakfast · around 07:15</strong><span class="chooseOne">CHOOSE ONE</span></div><div id="breakfastChoices"></div><div class="picked" id="breakfastPicked"></div></div>
+
+<div class="choiceGroup"><div class="choiceHead"><strong>Lunch · around 12:30</strong><span class="chooseOne">CHOOSE ONE</span></div><div id="lunchChoices"></div><div class="picked" id="lunchPicked"></div></div>
+
+<div class="choiceGroup"><div class="choiceHead"><strong>Snack · around 15:30</strong><span class="chooseOne">CHOOSE ONE</span></div><div id="snackChoices"></div><div class="picked" id="snackPicked"></div></div>
+
+<div class="choiceGroup"><div class="choiceHead"><strong>Dinner · around 19:00</strong><span class="chooseOne">CHOOSE ONE</span></div><div id="dinnerChoices"></div><div class="picked" id="dinnerPicked"></div></div>
+
+<div class="note">Your NutriTech Vegan Protein Cocoa serving is <b>2 rounded scoops (about 32 g) mixed with 200–250 ml water</b>; the product provides about 25 g protein per serving and is dairy/lactose-free. citeturn1search0</div>
 </div>
 
 <div class="card"><div class="section">Daily targets</div><div class="grid">
@@ -54,12 +60,46 @@ const tasks=[
 ["18:30","Strength","3 rounds: 12 squats, 15 glute bridges, 10 incline push-ups, 10 dead bugs/side, 10 bird dogs/side, 20–30 sec plank"],
 ["20:30","Water + recovery","Finish water target; relax; avoid unnecessary second dinner"]
 ];
-const dayKey="fcc-"+new Date().toISOString().slice(0,10);let state=JSON.parse(localStorage.getItem(dayKey)||"[]");
+const dayKey="fcc-"+new Date().toISOString().slice(0,10);let state=JSON.parse(localStorage.getItem(dayKey)||"[]");let mealState=JSON.parse(localStorage.getItem(dayKey+"-meals")||"{}");
+const mealChoices={
+ breakfast:[
+  ["Eggs + fruit","3 boiled eggs + 100 g cucumber + 80 g carrot + 1 medium banana"],
+  ["Yoghurt bowl","2 boiled eggs + 150 g lactose-free plain double-cream yoghurt + 100 g strawberries + 1 slice whole-wheat bread"],
+  ["Protein oats","40 g oats + 2 rounded scoops (32 g) NutriTech Vegan Protein Cocoa + 100 g banana + 250 ml water"],
+  ["Eggs on toast","2 boiled eggs + 2 slices whole-wheat bread + 1 medium orange + 100 g cucumber"],
+  ["Yoghurt + apple","150 g lactose-free plain double-cream yoghurt + 1 medium apple + 15 g peanut butter + 1 boiled egg"]
+ ],
+ lunch:[
+  ["Tuna sandwich","1 drained tin tuna + 2 slices whole-wheat bread + 100 g cucumber + 80 g carrot"],
+  ["Chicken wrap","120 g cooked skinless chicken breast + 1 whole-wheat wrap (about 60 g) + 100 g lettuce/cucumber/tomato"],
+  ["Egg & tuna sandwich","2 boiled eggs + ½ drained tin tuna + 2 slices whole-wheat bread + 100 g cucumber"],
+  ["Chicken rice bowl","120 g cooked skinless chicken breast + 150 g cooked rice + 150 g mixed vegetables"],
+  ["Tuna potato bowl","1 drained tin tuna + 180 g boiled potato + 150 g salad vegetables"]
+ ],
+ snack:[
+  ["Protein shake","2 rounded scoops (32 g) NutriTech Vegan Protein Cocoa + 200–250 ml water"],
+  ["Yoghurt + berries","150 g lactose-free plain double-cream yoghurt + 100 g strawberries"],
+  ["Apple + peanut butter","1 medium apple + 15 g peanut butter"],
+  ["Eggs + cucumber","2 boiled eggs + 100 g cucumber"],
+  ["Yoghurt + banana","150 g lactose-free plain double-cream yoghurt + 1 small banana"]
+ ],
+ dinner:[
+  ["Chicken + potato","150 g cooked skinless chicken breast + 150 g boiled/baked potato + 200 g mixed vegetables"],
+  ["Lean beef + rice","150 g cooked lean beef mince + 150 g cooked rice + 200 g mixed vegetables"],
+  ["Tuna pasta","1 drained tin tuna + 150 g cooked whole-wheat pasta + 150 g mixed vegetables"],
+  ["Fish + potato","150 g cooked hake or other white fish + 180 g boiled/baked potato + 200 g vegetables"],
+  ["Chicken stir-fry","150 g cooked skinless chicken breast + 150 g cooked rice + 200 g stir-fry vegetables"],
+  ["Egg & chicken plate","2 boiled eggs + 100 g cooked chicken breast + 150 g potato + 200 g salad/vegetables"]
+ ]};
+
 document.getElementById("date").textContent=new Date().toLocaleDateString("en-ZA",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 function render(){const done=state.filter(Boolean).length,p=Math.round(done/tasks.length*100),n=tasks.findIndex((_,i)=>!state[i]);document.getElementById("score").textContent=done+"/"+tasks.length;document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";document.getElementById("next").innerHTML=n<0?"<b>Day complete</b><small>You finished every task today.</small>":"<small>Next task</small><b>"+tasks[n][1]+"</b><small>"+tasks[n][0]+" · "+tasks[n][2]+"</small>";document.getElementById("tasks").innerHTML=tasks.map((t,i)=>'<label class="task '+(state[i]?"done":"")+'"><input type="checkbox" '+(state[i]?"checked":"")+' onchange="toggle('+i+')"><div><div class="time">'+t[0]+'</div><div class="title">'+t[1]+'</div><div class="detail">'+t[2]+'</div></div></label>').join("")}
 function toggle(i){state[i]=!state[i];localStorage.setItem(dayKey,JSON.stringify(state));render()}
-function resetDay(){state=[];localStorage.setItem(dayKey,"[]");render()}
+function chooseMeal(group,index){mealState[group]=index;localStorage.setItem(dayKey+"-meals",JSON.stringify(mealState));renderMeals()}
+function renderMeals(){Object.entries(mealChoices).forEach(([group,items])=>{const el=document.getElementById(group+"Choices"),picked=document.getElementById(group+"Picked"),selected=mealState[group];el.innerHTML=items.map((item,i)=>'<label class="choice '+(selected===i?"selected":"")+'"><input type="radio" name="'+group+'" '+(selected===i?"checked":"")+' onchange="chooseMeal(\\''+group+'\\','+i+')"><div><div class="choiceTitle">'+(i+1)+'. '+item[0]+'</div><div class="choiceDetail">'+item[1]+'</div></div></label>').join("");picked.textContent=selected===undefined?"Nothing selected yet — choose one.":"Selected: "+(selected+1)+". "+items[selected][0]})}
+function resetDay(){state=[];mealState={};localStorage.setItem(dayKey,"[]");localStorage.removeItem(dayKey+"-meals");render()}
 async function enableNotifications(){if(!("Notification"in window)){alert("Add this site to your iPhone Home Screen and open it as a Web App first.");return}const p=await Notification.requestPermission();if(p==="granted")new Notification("Fitness Command Centre",{body:"Notifications are enabled. Keep the app on your Home Screen."});else alert("Notifications are blocked. Go to Settings → Notifications and allow them for this web app.")}
 if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+renderMeals();
 render();
 </script></body></html>
